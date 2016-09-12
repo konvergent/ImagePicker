@@ -556,17 +556,21 @@ public class ImagePickerActivity extends AppCompatActivity implements OnImageCli
      * Start camera intent
      * Create a temporary file and pass file Uri to camera intent
      */
-    private void captureImage() {
+        private void captureImage() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
-            currentFile = ImageUtils.getOutputMediaFile(imageDirectory);
-            if (currentFile != null) {
-                currentUri = Uri.fromFile(currentFile);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, currentUri);
-                startActivityForResult(intent, Constants.REQUEST_CODE_CAPTURE);
-            } else {
-                Toast.makeText(this, getString(R.string.error_create_image_file), Toast.LENGTH_LONG).show();
-            }
+//            fileTemp = ImageUtils.getOutputMediaFile();
+            ContentValues values = new ContentValues(1);
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
+            fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+//            if (fileTemp != null) {
+//            fileUri = Uri.fromFile(fileTemp);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            startActivityForResult(intent, REQUEST_CODE_CAPTURE);
+//            } else {
+//                Toast.makeText(this, getString(R.string.error_create_image_file), Toast.LENGTH_LONG).show();
+//            }
         } else {
             Toast.makeText(this, getString(R.string.error_no_camera), Toast.LENGTH_LONG).show();
         }
